@@ -215,17 +215,25 @@ class QuickWKT:
 
                     # DMS2DD
                     ##########################
-                    re_coords = re.compile(r"\((.+)\)")
-                    re_nums = re.compile(r"[\d.]+")
-                    r1 = re_coords.search(wktLine)
-                    r2 = re_nums.findall(r1.group())
-                    if len(r2) > 5:
-                        d1, m1, s1, d2, m2, s2 = r2
-                        res = "{} {}".format((float(d1) + float(m1)/60 + float(s1)/3600), (float(d2) + float(m2)/60 + float(s2)/3600))
-                        wktLine = "{}({})".format((wktLine[:r1.start()]), res)
-                        # res = f"{ float(d1) + float(m1)/60 + float(s1)/3600 } { float(d2) + float(m2)/60 + float(s2)/3600 }"
-                        # wktLine = f"{wktLine[:r1.start()]}({res})"
+                    if 'POINT' in wktLine:
+                        # for points in DMS make conversion to DD
+                        re_coords = re.compile(r"\((.+)\)")
+                        re_nums = re.compile(r"[\d.]+")
+                        r1 = re_coords.search(wktLine)
+                        r2 = re_nums.findall(r1.group())
+                        if len(r2) > 5:
+                            d1, m1, s1, d2, m2, s2 = r2
+                            res = "{} {}".format((float(d1) + float(m1)/60 + float(s1)/3600), (float(d2) + float(m2)/60 + float(s2)/3600))
+                            wktLine = "{}({})".format((wktLine[:r1.start()]), res)
+                            # res = f"{ float(d1) + float(m1)/60 + float(s1)/3600 } { float(d2) + float(m2)/60 + float(s2)/3600 }"
+                            # wktLine = f"{wktLine[:r1.start()]}({res})"
+
+                        results = re.match(regex, wktLine)
+                        wktLine = results.group(1) + " " + results.group(2)
                     ##########################
+                    else:
+                        results = re.match(regex, wktLine)
+                        wktLine = results.group(1) + " " + results.group(2)
 
                     results = re.match(regex, wktLine)
                     wktLine = results.group(1) + " " + results.group(2)
